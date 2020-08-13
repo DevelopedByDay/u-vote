@@ -56,6 +56,33 @@ app.get('/api/candidate/:id', (req, res) => {
     });
 });
 
+app.put('/api/candidate/:id', (req, res) => {
+
+    const errors = inputCheck(req.body, 'party_id');
+
+    if (errors) {
+    res.status(400).json({ error: errors });
+    return;
+    }
+    
+    const sql = `UPDATE candidates SET party_id = ? 
+                 WHERE id = ?`;
+    const params = [req.body.party_id, req.params.id];
+  
+    db.run(sql, params, function(err, result) {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+  
+      res.json({
+        message: 'success',
+        data: req.body,
+        changes: this.changes
+      });
+    });
+  });
+
 app.get('/api/parties', (req, res) => {
     const sql = `SELECT * FROM parties`;
     const params = [];
